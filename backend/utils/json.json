@@ -1,0 +1,66 @@
+{
+  "info": {
+    "_postman_id": "0b1fe527-bb2e-4b6f-bc1a-pqrs-api",
+    "name": "PQRS API - FastAPI + Supabase",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Crear usuario",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nombre\": \"Juan Pérez\",\n  \"email\": \"juan@example.com\",\n  \"password\": \"123456\",\n  \"tipo_usuario\": \"registrado\"\n}"
+        },
+        "url": { "raw": "http://localhost:8000/usuarios", "host": ["localhost"], "port": "8000", "path": ["usuarios"] }
+      }
+    },
+    {
+      "name": "Obtener todos los usuarios",
+      "request": {
+        "method": "GET",
+        "url": { "raw": "http://localhost:8000/usuarios", "host": ["localhost"], "port": "8000", "path": ["usuarios"] }
+      }
+    },
+    {
+      "name": "Crear PQRS",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"titulo\": \"Producto defectuoso\",\n  \"tipo\": \"queja\",\n  \"descripcion\": \"El producto llegó roto.\",\n  \"usuario_id\": \"REEMPLAZAR_ID\"\n}"
+        },
+        "url": { "raw": "http://localhost:8000/pqrs", "host": ["localhost"], "port": "8000", "path": ["pqrs"] }
+      }
+    },
+    {
+      "name": "Obtener PQRS por usuario",
+      "request": {
+        "method": "GET",
+        "url": { "raw": "http://localhost:8000/pqrs/REEMPLAZAR_ID", "host": ["localhost"], "port": "8000", "path": ["pqrs", "REEMPLAZAR_ID"] }
+      }
+    },
+    {
+      "name": "Crear respuesta",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"pqrs_id\": \"REEMPLAZAR_ID\",\n  \"admin_id\": \"REEMPLAZAR_ID\",\n  \"mensaje\": \"Ya se envió un nuevo producto.\"\n}"
+        },
+        "url": { "raw": "http://localhost:8000/respuestas", "host": ["localhost"], "port": "8000", "path": ["respuestas"] }
+      }
+    },
+    {
+      "name": "Obtener respuestas por PQRS",
+      "request": {
+        "method": "GET",
+        "url": { "raw": "http://localhost:8000/respuestas/REEMPLAZAR_ID", "host": ["localhost"], "port": "8000", "path": ["respuestas", "REEMPLAZAR_ID"] }
+      }
+    }
+  ]
+}
