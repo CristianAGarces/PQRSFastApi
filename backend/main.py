@@ -1,4 +1,6 @@
 from fastapi import FastAPI
+import uvicorn
+import os
 from routes import users, pqrs, response
 
 app = FastAPI()
@@ -25,3 +27,12 @@ def test_connection():
             "estado": "error ❌",
             "detalle": str(e)
         }
+    
+@app.get("/")
+def read_root():
+    return {"message": "¡Hola, mundo, proyect in FastApi!"}
+
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 8000))
+    uvicorn.run(app, host="0.0.0.0", port=port)
+
