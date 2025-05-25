@@ -10,6 +10,10 @@ class PQRSRequest(BaseModel):
     descripcion: str
     usuario_id: str
 
+# 🔁 Nuevo modelo extendido para actualización
+class PQRSUpdateRequest(PQRSRequest):
+    estado: str
+
 @router.post("/")
 def crear_pqrs(pqrs: PQRSRequest):
     try:
@@ -44,9 +48,13 @@ def obtener_pqrs_por_id(pqrs_id: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+# ✅ Endpoint PUT actualizado para incluir 'estado'
 @router.put("/{pqrs_id}")
-def actualizar_pqrs(pqrs_id: str, pqrs: PQRSRequest):
+def actualizar_pqrs(pqrs_id: str, pqrs: PQRSUpdateRequest):
     try:
+        print("Actualizando PQRS ID:", pqrs_id)
+        print("Datos recibidos:", pqrs.dict())
+
         result = supabase.table("pqrs").update(pqrs.dict()).eq("id", pqrs_id).execute()
         return {"mensaje": "PQRS actualizada", "data": result.data}
     except Exception as e:
