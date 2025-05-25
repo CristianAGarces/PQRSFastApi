@@ -8,7 +8,7 @@ class UserRequest(BaseModel):
     nombre: str
     email: EmailStr
     password: str
-    tipo_usuario: str  # 'Profesor o empleado', 'Padre de familia', 'Estudiante', 'Otro'
+    tipo_usuario: str  # 'Profesor o empleado', 'Padre de familia', 'Estudiante', 'Otro', 'admin'
 
 @router.post("/")
 def crear_usuario(user: UserRequest):
