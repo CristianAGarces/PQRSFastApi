@@ -4,18 +4,17 @@ from services.supabase import supabase
 
 router = APIRouter()
 
-# 🔸 Modelo base para crear PQRS
+# Modelo base para crear PQRS
 class PQRSRequest(BaseModel):
     titulo: str
     tipo: str  # 'peticion', 'queja', 'reclamo', 'sugerencia'
     descripcion: str
     usuario_id: str
 
-# 🔹 Modelo extendido para actualizar también el estado
+# Modelo extendido para actualización que incluye 'estado'
 class PQRSUpdateRequest(PQRSRequest):
     estado: str
 
-# ✅ Crear PQRS (inicia en estado "pendiente")
 @router.post("/")
 def crear_pqrs(pqrs: PQRSRequest):
     try:
@@ -26,7 +25,6 @@ def crear_pqrs(pqrs: PQRSRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-# ✅ Obtener todas las PQRS
 @router.get("/")
 def obtener_todas_las_pqrs():
     try:
@@ -35,7 +33,6 @@ def obtener_todas_las_pqrs():
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-# ✅ Obtener PQRS por usuario
 @router.get("/{usuario_id}")
 def obtener_pqrs_por_usuario(usuario_id: str):
     try:
@@ -44,7 +41,6 @@ def obtener_pqrs_por_usuario(usuario_id: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-# ✅ Obtener una PQRS por su ID
 @router.get("/id/{pqrs_id}")
 def obtener_pqrs_por_id(pqrs_id: str):
     try:
@@ -53,27 +49,30 @@ def obtener_pqrs_por_id(pqrs_id: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-# ✅ Actualizar PQRS (sin modificar usuario_id)
 @router.put("/{pqrs_id}")
 def actualizar_pqrs(pqrs_id: str, pqrs: PQRSUpdateRequest):
     try:
         print("Actualizando PQRS ID:", pqrs_id)
         print("Datos recibidos:", pqrs.dict())
 
-        # 🔒 Solo actualizamos campos válidos (NO usuario_id)
-        data = {
+        campos_actualizables = {
             "titulo": pqrs.titulo,
             "tipo": pqrs.tipo,
             "descripcion": pqrs.descripcion,
+            "usuario_id": pqrs.usuario_id,
             "estado": pqrs.estado
         }
 
-        result = supabase.table("pqrs").update(data).eq("id", pqrs_id).execute()
+        result = supabase.table("pqrs").update(campos_actualizables).eq("id", pqrs_id).execute()
+
+        if hasattr(result, "error") and result.error:
+            raise Exception(result.error)
+
         return {"mensaje": "PQRS actualizada", "data": result.data}
     except Exception as e:
+        print("ERROR en actualización:", e)
         raise HTTPException(status_code=500, detail=str(e))
 
-# ✅ Eliminar PQRS
 @router.delete("/{pqrs_id}")
 def eliminar_pqrs(pqrs_id: str):
     try:
