@@ -64,6 +64,7 @@ def actualizar_pqrs(pqrs_id: str, pqrs: PQRSUpdateRequest):
             "descripcion": pqrs.descripcion,
             "usuario_id": pqrs.usuario_id,
             "estado": pqrs.estado
+            "archivo_url": pqrs.archivo_url 
         }
 
         result = supabase.table("pqrs").update(campos_actualizables).eq("id", pqrs_id).execute()
