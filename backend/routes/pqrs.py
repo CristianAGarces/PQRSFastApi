@@ -1,17 +1,44 @@
+from fastapi import UploadFile, File, Form
 from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel, HttpUrl
-from typing import Optional
 from services.supabase import supabase
 
 router = APIRouter()
 
-# Modelo base para crear PQRS
-class PQRSRequest(BaseModel):
-    titulo: str
-    tipo: str
-    descripcion: str
-    usuario_id: str
-    archivo_url: Optional[str] = None  # ← cambio importante
+@router.post("/")
+def crear_pqrs_con_archivo(
+    titulo: str = Form(...),
+    tipo: str = Form(...),
+    descripcion: str = Form(...),
+    usuario_id: str = Form(...),
+    archivo: UploadFile = File(None)
+):
+    try:
+        archivo_url = None
+
+        if archivo:
+            bucket_name = "documentos-pqrs"
+            nombre_archivo = f"{usuario_id}_{archivo.filename}"
+
+            # Subir archivo al bucket
+            supabase.storage.from_(bucket_name).upload(nombre_archivo, archivo.file)
+
+            # Construir URL pública con tu Project ID
+            archivo_url = f"https://dcdlnozbxejqgkiiubhx.supabase.co/storage/v1/object/public/{bucket_name}/{nombre_archivo}"
+
+        # Guardar PQRS con archivo_url
+        data = {
+            "titulo": titulo,
+            "tipo": tipo,
+            "descripcion": descripcion,
+            "usuario_id": usuario_id,
+            "estado": "pendiente",
+            "archivo_url": archivo_url
+        }
+
+        result = supabase.table("pqrs").insert(data).execute()
+        return {"mensaje": "PQRS creada", "data": result.data}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 # Modelo extendido para actualización que incluye 'estado'
