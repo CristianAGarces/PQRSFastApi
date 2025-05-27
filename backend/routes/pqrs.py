@@ -27,20 +27,23 @@ def crear_pqrs_con_archivo(
 
         if archivo:
             bucket_name = "documentos-pqrs"
-            nombre_archivo = f"{usuario_id}{re.sub(r'[^a-zA-Z0-9.-]', '_', archivo.filename)}"
+            nombre_archivo = f"{usuario_id}{re.sub(r'[^a-zA-Z0-9.-]', '', archivo.filename)}"
             contenido = archivo.file.read()
 
+            # Subir a Supabase (ruta corregida, sin duplicar el bucket)
             resultado = supabase.storage.from_(bucket_name).upload(
-                f"{bucket_name}/{nombre_archivo}",
+                nombre_archivo,
                 contenido,
                 {"content-type": archivo.content_type}
             )
 
             if getattr(resultado, "error", None):
                 raise Exception(f"Error subiendo archivo: {resultado.error}")
-            
+
+            # URL pública correcta
             archivo_url = f"https://dcdlnozbxejqgkiiubhx.supabase.co/storage/v1/object/public/{bucket_name}/{nombre_archivo}"
 
+        # Crear entrada PQRS
         data = {
             "titulo": titulo,
             "tipo": tipo,
@@ -60,6 +63,8 @@ def crear_pqrs_con_archivo(
         print("ERROR DEBUG:", e)
         raise HTTPException(status_code=500, detail=str(e))
 
+
+# ------------------- Consultar todas las PQRS -------------------
 @router.get("/")
 def obtener_todas_las_pqrs():
     try:
@@ -68,6 +73,8 @@ def obtener_todas_las_pqrs():
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+
+# ------------------- Consultar PQRS por usuario -------------------
 @router.get("/{usuario_id}")
 def obtener_pqrs_por_usuario(usuario_id: str):
     try:
@@ -76,6 +83,8 @@ def obtener_pqrs_por_usuario(usuario_id: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+
+# ------------------- Consultar PQRS por ID -------------------
 @router.get("/id/{pqrs_id}")
 def obtener_pqrs_por_id(pqrs_id: str):
     try:
@@ -84,6 +93,8 @@ def obtener_pqrs_por_id(pqrs_id: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+
+# ------------------- Actualizar PQRS -------------------
 @router.put("/{pqrs_id}")
 def actualizar_pqrs(pqrs_id: str, pqrs: PQRSUpdateRequest):
     try:
@@ -103,6 +114,8 @@ def actualizar_pqrs(pqrs_id: str, pqrs: PQRSUpdateRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+
+# ------------------- Eliminar PQRS -------------------
 @router.delete("/{pqrs_id}")
 def eliminar_pqrs(pqrs_id: str):
     try:
