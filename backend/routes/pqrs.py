@@ -1,8 +1,19 @@
-from fastapi import UploadFile, File, Form
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, UploadFile, File, Form
+from pydantic import BaseModel
 from services.supabase import supabase
 
 router = APIRouter()
+
+
+class PQRSRequest(BaseModel):
+    titulo: str
+    tipo: str  # 'peticion', 'queja', 'reclamo', 'sugerencia'
+    descripcion: str
+    usuario_id: str
+
+class PQRSUpdateRequest(PQRSRequest):
+    estado: str
+
 
 @router.post("/")
 def crear_pqrs_con_archivo(
@@ -18,14 +29,12 @@ def crear_pqrs_con_archivo(
         if archivo:
             bucket_name = "documentos-pqrs"
             nombre_archivo = f"{usuario_id}_{archivo.filename}"
+            contenido = archivo.file.read()
 
-            # Subir archivo al bucket
-            supabase.storage.from_(bucket_name).upload(nombre_archivo, archivo.file)
+            supabase.storage.from_(bucket_name).upload(nombre_archivo, contenido)
 
-            # Construir URL pública con tu Project ID
             archivo_url = f"https://dcdlnozbxejqgkiiubhx.supabase.co/storage/v1/object/public/{bucket_name}/{nombre_archivo}"
 
-        # Guardar PQRS con archivo_url
         data = {
             "titulo": titulo,
             "tipo": tipo,
@@ -40,21 +49,6 @@ def crear_pqrs_con_archivo(
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-
-# Modelo extendido para actualización que incluye 'estado'
-class PQRSUpdateRequest(PQRSRequest):
-    estado: str
-
-@router.post("/")
-def crear_pqrs(pqrs: PQRSRequest):
-    try:
-        data = pqrs.dict()
-        data["estado"] = "pendiente"
-        result = supabase.table("pqrs").insert(data).execute()
-        return {"mensaje": "PQRS creada", "data": result.data}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
 @router.get("/")
 def obtener_todas_las_pqrs():
     try:
@@ -62,6 +56,7 @@ def obtener_todas_las_pqrs():
         return result.data
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
 
 @router.get("/{usuario_id}")
 def obtener_pqrs_por_usuario(usuario_id: str):
@@ -79,19 +74,16 @@ def obtener_pqrs_por_id(pqrs_id: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+
 @router.put("/{pqrs_id}")
 def actualizar_pqrs(pqrs_id: str, pqrs: PQRSUpdateRequest):
     try:
-        print("Actualizando PQRS ID:", pqrs_id)
-        print("Datos recibidos:", pqrs.dict())
-
         campos_actualizables = {
             "titulo": pqrs.titulo,
             "tipo": pqrs.tipo,
             "descripcion": pqrs.descripcion,
             "usuario_id": pqrs.usuario_id,
-            "estado": pqrs.estado,
-            "archivo_url": pqrs.archivo_url 
+            "estado": pqrs.estado
         }
 
         result = supabase.table("pqrs").update(campos_actualizables).eq("id", pqrs_id).execute()
@@ -101,8 +93,8 @@ def actualizar_pqrs(pqrs_id: str, pqrs: PQRSUpdateRequest):
 
         return {"mensaje": "PQRS actualizada", "data": result.data}
     except Exception as e:
-        print("ERROR en actualización:", e)
         raise HTTPException(status_code=500, detail=str(e))
+
 
 @router.delete("/{pqrs_id}")
 def eliminar_pqrs(pqrs_id: str):
