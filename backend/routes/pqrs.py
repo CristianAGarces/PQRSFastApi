@@ -2,6 +2,9 @@ from fastapi import APIRouter, HTTPException, UploadFile, File, Form
 from pydantic import BaseModel
 from services.supabase import supabase
 import re
+import time
+import os
+
 
 router = APIRouter()
 
@@ -13,6 +16,9 @@ class PQRSRequest(BaseModel):
 
 class PQRSUpdateRequest(PQRSRequest):
     estado: str
+
+import os
+import time
 
 @router.post("/")
 def crear_pqrs_con_archivo(
@@ -27,10 +33,13 @@ def crear_pqrs_con_archivo(
 
         if archivo:
             bucket_name = "documentos-pqrs"
-            nombre_archivo = f"{usuario_id}{re.sub(r'[^a-zA-Z0-9.-]', '', archivo.filename)}"
+
+            # Obtener nombre limpio del archivo y evitar caracteres inválidos
+            nombre_archivo_original = os.path.basename(archivo.filename)
+            nombre_archivo = f"{int(time.time() * 1000)}-{re.sub(r'[^a-zA-Z0-9._-]', '_', nombre_archivo_original)}"
+
             contenido = archivo.file.read()
 
-            # Subir a Supabase (ruta corregida, sin duplicar el bucket)
             resultado = supabase.storage.from_(bucket_name).upload(
                 nombre_archivo,
                 contenido,
@@ -38,12 +47,10 @@ def crear_pqrs_con_archivo(
             )
 
             if getattr(resultado, "error", None):
-                raise Exception(f"Error subiendo archivo: {resultado.error}")
+                raise Exception(f"Error subiendo archivo: {result.error}")
 
-            # URL pública correcta
             archivo_url = f"https://dcdlnozbxejqgkiiubhx.supabase.co/storage/v1/object/public/{bucket_name}/{nombre_archivo}"
 
-        # Crear entrada PQRS
         data = {
             "titulo": titulo,
             "tipo": tipo,
