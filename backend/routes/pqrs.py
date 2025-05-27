@@ -28,9 +28,15 @@ def crear_pqrs_con_archivo(
         if archivo:
             bucket_name = "documentos-pqrs"
             nombre_archivo = f"{usuario_id}{re.sub(r'[^a-zA-Z0-9.-]', '_', archivo.filename)}"
-            contenido = archivo.file.read()
-            
-            resultado = supabase.storage.from_(bucket_name).upload(nombre_archivo, contenido)
+contenido = archivo.file.read()
+
+resultado = supabase.storage.from_(bucket_name).upload(
+    f"{bucket_name}/{nombre_archivo}",
+    contenido,
+    {
+        "content-type": archivo.content_type  # <-- Esto es la clave para que el navegador lo abra bien
+    }
+)
             if getattr(resultado, "error", None):
                 raise Exception(f"Error subiendo archivo: {resultado.error}")
             
