@@ -11,7 +11,7 @@ class PQRSRequest(BaseModel):
     tipo: str
     descripcion: str
     usuario_id: str
-    archivo_url: Optional[HttpUrl] = None 
+    archivo_url: Optional[str] = None  # ← cambio importante
 
 
 # Modelo extendido para actualización que incluye 'estado'
