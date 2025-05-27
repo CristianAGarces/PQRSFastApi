@@ -1,5 +1,6 @@
 from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel
+from pydantic import BaseModel, HttpUrl
+from typing import Optiona
 from services.supabase import supabase
 
 router = APIRouter()
@@ -7,9 +8,10 @@ router = APIRouter()
 # Modelo base para crear PQRS
 class PQRSRequest(BaseModel):
     titulo: str
-    tipo: str  # 'peticion', 'queja', 'reclamo', 'sugerencia'
+    tipo: str
     descripcion: str
     usuario_id: str
+    archivo_url: Optional[HttpUrl] = None 
 
 
 # Modelo extendido para actualización que incluye 'estado'
