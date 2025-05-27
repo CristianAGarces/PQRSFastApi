@@ -58,7 +58,9 @@ def crear_pqrs_con_archivo(
 
     except Exception as e:
         print("ERROR DEBUG:", e)
-        raise HTTPException(status_code=500, detail=str(e))@router.get("/")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/")
 def obtener_todas_las_pqrs():
     try:
         result = supabase.table("pqrs").select("*").execute()
