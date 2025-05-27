@@ -63,7 +63,7 @@ def actualizar_pqrs(pqrs_id: str, pqrs: PQRSUpdateRequest):
             "tipo": pqrs.tipo,
             "descripcion": pqrs.descripcion,
             "usuario_id": pqrs.usuario_id,
-            "estado": pqrs.estado
+            "estado": pqrs.estado,
             "archivo_url": pqrs.archivo_url 
         }
 
