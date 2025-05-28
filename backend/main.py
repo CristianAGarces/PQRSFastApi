@@ -46,6 +46,6 @@ if _name_ == "_main_":
     uvicorn.run(app, host="0.0.0.0", port=port
     return {"message": "¡Hola, mundo, proyect in FastApi!"}
 
-if __name__ == "__main__":
+if _name_ == "_main_":
     port = int(os.environ.get("PORT", 8000))
     uvicorn.run(app, host="0.0.0.0", port=port)
