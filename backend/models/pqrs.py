@@ -1,4 +1,4 @@
-from pydantic import BaseModel, validator
+from pydantic import BaseModel, field_validator
 
 class PQRSRequest(BaseModel):
     titulo: str
@@ -6,7 +6,7 @@ class PQRSRequest(BaseModel):
     descripcion: str
     usuario_id: str  # UUID
 
-    @validator("tipo")
+    @field_validator("tipo")
     def validar_tipo(cls, v):
         tipos_validos = {"peticion", "queja", "reclamo", "sugerencia"}
         if v not in tipos_validos:
