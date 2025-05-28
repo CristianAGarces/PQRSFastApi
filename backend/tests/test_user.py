@@ -1,6 +1,6 @@
 import pytest
 from pydantic import ValidationError
-from models import UserRequest  # Ajusta la importación según tu estructura
+from models.users import UserRequest  # Ajusta la importación según tu estructura
 
 def test_user_request_valid():
     """Verifica que un usuario válido se crea correctamente."""

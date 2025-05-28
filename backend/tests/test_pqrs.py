@@ -1,6 +1,6 @@
 import pytest
 from pydantic import ValidationError
-from models import PQRSRequest  # Ajusta la importación según tu estructura
+from models.pqrs import PQRSRequest  # Ajusta la importación según tu estructura
 
 def test_pqrs_request_valid():
     """Verifica que una PQRS válida se inicializa correctamente."""
