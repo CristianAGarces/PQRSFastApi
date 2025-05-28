@@ -41,7 +41,6 @@ def test_connection():
         }
     except Exception as e:
         return {"estado": "error ❌", "detalle": str(e)}
-
 # Arranque
 if _name_ == "_main_":
     port = int(os.environ.get("PORT", 8000))
