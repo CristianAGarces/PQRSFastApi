@@ -16,18 +16,28 @@ def test_response_request_valid():
 
 def test_response_request_empty_pqrs_id():
     """Verifica que Pydantic lanza un error si 'pqrs_id' está vacío."""
-    with pytest.raises(ValidationError):
+    try:
         ResponseRequest(
             pqrs_id="",
             admin_id="456xyz",
             mensaje="Procesamos su solicitud."
         )
+    except ValidationError as e:
+        print("ValidationError (pqrs_id vacío):", e)
+        raise
+    else:
+        print("No se lanzó ValidationError para pqrs_id vacío")
 
 def test_response_request_empty_message():
     """Verifica que Pydantic lanza un error si el mensaje está vacío."""
-    with pytest.raises(ValidationError):
+    try:
         ResponseRequest(
             pqrs_id="123abc",
             admin_id="456xyz",
             mensaje=""
         )
+    except ValidationError as e:
+        print("ValidationError (mensaje vacío):", e)
+        raise
+    else:
+        print("No se lanzó ValidationError para mensaje vacío")

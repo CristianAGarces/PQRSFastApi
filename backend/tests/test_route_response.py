@@ -12,6 +12,7 @@ def test_crear_respuesta():
         "mensaje": "Esta es una respuesta de prueba"
     }
     response = client.post("/", json=data)
+    print("Response al crear la respuesta:", "Code: ", response.status_code, "Respuesta:", response.json())  # Para depuración
     assert response.status_code == 200
     assert response.json()["mensaje"] == "Respuesta creada"
     assert "data" in response.json()
@@ -19,6 +20,7 @@ def test_crear_respuesta():
 # ------------------- Test Obtener Todas las Respuestas -------------------
 def test_obtener_todas_las_respuestas():
     response = client.get("/")
+    print("Response al obtener todas las respuestas:", "Code:", response.status_code, "Respuesta:",response.json())  # Para depuración
     assert response.status_code == 200
     assert isinstance(response.json(), list)
 
@@ -26,6 +28,7 @@ def test_obtener_todas_las_respuestas():
 def test_obtener_respuestas_por_pqrs():
     pqrs_id = "1"
     response = client.get(f"/por-pqrs/{pqrs_id}")
+    print("Response al obtener respuestas por PQRS:", "Code",response.status_code,"Respuesta:", response.json())  # Para depuración
     assert response.status_code == 200
     assert isinstance(response.json(), list)
 
@@ -38,6 +41,7 @@ def test_actualizar_respuesta():
         "mensaje": "Mensaje actualizado"
     }
     response = client.put(f"/{respuesta_id}", json=data)
+    print("Response al actualizar la respuesta:", "Code: ", response.status_code,"Respuesta: ", response.json())  # Para depuración
     assert response.status_code == 200
     assert response.json()["mensaje"] == "Respuesta actualizada"
 
@@ -45,5 +49,6 @@ def test_actualizar_respuesta():
 def test_eliminar_respuesta():
     respuesta_id = "1"
     response = client.delete(f"/{respuesta_id}")
+    print("Response al eliminar la respuesta:","Code: ", response.status_code,"Respuesta:", response.json())  # Para depuración
     assert response.status_code == 200
     assert response.json()["mensaje"] == "Respuesta eliminada"
