@@ -31,7 +31,7 @@ def test_connection():
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],  # o ["*"] para todos los orígenes (no recomendado para producción)
+    allow_origins=["https://pqrs-fastapi-react.vercel.app/"],  # o ["*"] para todos los orígenes (no recomendado para producción)
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
