@@ -6,16 +6,30 @@ from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
-# Incluir los routers
+# CORS corregido
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:3000",
+        "https://pqrs-fastapi-react.vercel.app"
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Rutas
 app.include_router(users.router, prefix="/usuarios", tags=["Usuarios"])
 app.include_router(pqrs.router, prefix="/pqrs", tags=["PQRS"])
 app.include_router(response.router, prefix="/respuestas", tags=["Respuestas"])
 
-# Ruta de prueba de conexión
+@app.get("/")
+def read_root():
+    return {"message": "¡Hola, mundo, proyect in FastApi!"}
+
 @app.get("/test")
 def test_connection():
     try:
-        # Asegúrate de que la tabla se llama 'pqrs'
         from services.supabase import supabase
         response = supabase.table("pqrs").select("*").limit(1).execute()
         return {
@@ -24,21 +38,12 @@ def test_connection():
             "datos_de_prueba": response.data
         }
     except Exception as e:
-        return {
-            "estado": "error ❌",
-            "detalle": str(e)
-        }
+        return {"estado": "error ❌", "detalle": str(e)}
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["https://pqrs-fastapi-react.vercel.app/"],  # o ["*"] para todos los orígenes (no recomendado para producción)
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-    
-@app.get("/")
-def read_root():
+# 🔥 CORREGIDO
+if _name_ == "_main_":
+    port = int(os.environ.get("PORT", 8000))
+    uvicorn.run(app, host="0.0.0.0", port=port
     return {"message": "¡Hola, mundo, proyect in FastApi!"}
 
 if __name__ == "__main__":
