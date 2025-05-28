@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
-# CORS corregido
+# Middleware CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
@@ -23,10 +23,12 @@ app.include_router(users.router, prefix="/usuarios", tags=["Usuarios"])
 app.include_router(pqrs.router, prefix="/pqrs", tags=["PQRS"])
 app.include_router(response.router, prefix="/respuestas", tags=["Respuestas"])
 
+# Endpoint raíz
 @app.get("/")
 def read_root():
     return {"message": "¡Hola, mundo, proyect in FastApi!"}
 
+# Endpoint de testeo
 @app.get("/test")
 def test_connection():
     try:
@@ -40,12 +42,7 @@ def test_connection():
     except Exception as e:
         return {"estado": "error ❌", "detalle": str(e)}
 
-# 🔥 CORREGIDO
-if _name_ == "_main_":
-    port = int(os.environ.get("PORT", 8000))
-    uvicorn.run(app, host="0.0.0.0", port=port
-    return {"message": "¡Hola, mundo, proyect in FastApi!"}
-
+# Arranque
 if _name_ == "_main_":
     port = int(os.environ.get("PORT", 8000))
     uvicorn.run(app, host="0.0.0.0", port=port)
